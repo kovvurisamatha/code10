@@ -67,7 +67,24 @@ app.post('/login', async (request, response) => {
   }
 })
 //api2
+const getstatedetails=(dbobject)=>{
+  return{
+    stateId:dbobject.state_id,
+    stateName:dbobject.state_name,
+    population:dbobject.population
+  }
+}
 app.get('/states/', authenticateToken, async (request, response) => {
   const allstatesquery = `select * from state`
   const dbresponse = await db.all(allstatesquery)
+  response.send(dbresponse.map((eachstate)=>getstatedetails(eachstate)));
+})
+//api3
+
+app.get('/states/:stateId/', authenticateToken, async (request, response) => {
+  const {stateId} = request.params
+  const getstatequery = `select * from state where
+  state_id=${stateId}`
+  const dbresponse = await db.get(getstatequery)
+  response.send(getstatedetails(dbresponse));
 })
